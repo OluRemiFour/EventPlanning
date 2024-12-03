@@ -7,7 +7,7 @@ function LandingPage() {
   return (
     <div>
       <div className="flex py-[20px] md:px-[60px] px-[20px] border-b shadow-sm justify-between items-center">
-        <div className="flex items-center md:block hidden gap-2">
+        <div className="md:flex items-center hidden gap-2">
           <Image
             aria-hidden
             src="/homeLogo.svg"
@@ -50,7 +50,7 @@ function LandingPage() {
               one powerful, intuitive platform.
             </p>
             <Link
-              href={"signup"}
+              href={"/login"}
               className="text-[var(--text-color)] cursor-pointer md:ml-[12rem] lg:ml-[22rem] rounded-[8px] bg-[var(--primary-color)] p-4"
             >
               Create an Event
@@ -83,7 +83,7 @@ function LandingPage() {
           </p>
 
           <Link
-            href={"signup"}
+            href={"/login"}
             className="text-[var(--text-color)] cursor-pointer rounded-[8px] bg-[var(--primary-color)] p-3"
           >
             Create Your First Event
@@ -187,14 +187,14 @@ function LandingPage() {
       <div className="w-fit mx-auto py-12">
         <Image
           src="pic.svg"
-          // className="object-contain"
+          // className="w-full"
           width={1500}
           height={600}
           alt="pix"
         />
       </div>
 
-      <div className="mx-auto w-fit mt-32">
+      <div className="mx-auto w-fit md:mt-32">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 items-center">
           <p className="rounded-full text-center px-4 py-3 font-medium bg-[#f7f7f7]">
             About us

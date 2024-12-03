@@ -6,6 +6,7 @@ import { IoPeopleSharp } from "react-icons/io5";
 import CreateEvent from "./components/CreateEvent";
 import { useAtom } from "jotai";
 import { activeUser } from "../lib/User";
+import { toast } from "react-toastify";
 
 function Dashboard() {
   const [event, setEvent] = useState("all");
@@ -16,18 +17,21 @@ function Dashboard() {
   console.log(authUser);
 
   // if (!loggedInUser) {
-  if (!authUser) {
-    window.location.href = "/login";
-    return;
-  }
+  useEffect(() => {
+    if (!authUser) {
+      // toast.error("You must be logged in to access dashboard");
+      window.location.href = "/login";
+      return;
+    }
+  }, [authUser]);
 
   const handleEvent = (type) => {
     setEvent(type);
   };
   return (
-    <div className="px-14 py-4">
-      <div className="flex items-center gap-8">
-        <div className="rounded-lg bg-[#e3752b] shadow-md w-[370px] h-[174px] px-3 py-4">
+    <div className="px-16 py-4">
+      <div className="flex items-center gap-12">
+        <div className="rounded-lg bg-[#e3752b] shadow-md w-[400px] h-[205px] px-3 py-8">
           <div className="p-3">
             <div className="flex text-white items-center gap-2">
               <BsCalendarEvent />
@@ -42,7 +46,7 @@ function Dashboard() {
             Total number of all scheduled event.
           </p>
         </div>
-        <div className="rounded-lg bg-[#00458f] shadow-md w-[370px] h-[174px] px-3 py-4">
+        <div className="rounded-lg bg-[#00458f] shadow-md w-[400px] h-[205px] px-3 py-8">
           <div className="p-3">
             <div className="flex text-white items-center gap-2">
               <IoPeopleSharp />
@@ -57,7 +61,7 @@ function Dashboard() {
             Total number of attendees registered across all events.
           </p>
         </div>
-        <div className="rounded-lg bg-[#cc5a00] shadow-md w-[370px] h-[174px] px-3 py-4">
+        <div className="rounded-lg bg-[#cc5a00] shadow-md w-[400px] h-[205px] px-3 py-8">
           <div className="p-3">
             <div className="flex text-white items-center gap-2">
               <BsFillCalendarEventFill />

@@ -41,7 +41,7 @@ function ReviewEvent() {
               </div>
               <div className="space-y-2 py-1">
                 <p className="">Event Schedule</p>
-                <div className="flex items-center">
+                <div className="flex gap-2 items-center">
                   <p className="text-[#7D7D7D] rounded-lg border bg-[#f0f0f0] px-2 py-3 outline-none w-full">
                     Start: 12/15/2024 05:00 PM
                   </p>

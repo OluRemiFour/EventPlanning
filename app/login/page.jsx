@@ -131,7 +131,7 @@ function Login() {
   return (
     <div>
       <Header />
-      <div className="flex items-center gap-32">
+      <div className="md:flex items-center md:gap-16 lg:gap-32">
         <Image
           aria-hidden
           src="/authpic.svg"
@@ -140,7 +140,7 @@ function Login() {
           height={800}
           className="h-full"
         />
-        <div>
+        <div className="px-[40px] py-8">
           <div className="flex justify-center flex-col items-center">
             <h1 className="font-semibold text-[24px] py-2">Welcome Back!</h1>
             <p className="py-2 text-[#999999]">

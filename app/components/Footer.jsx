@@ -6,7 +6,7 @@ import { FaInstagram } from "react-icons/fa6";
 
 function Footer() {
   return (
-    <div className="border border-t-[#EAEAEA] mt-24">
+    <div className="border border-t-[#EAEAEA] md:mt-24 mt-10">
       <div className="pt-14 mx-auto w-fit">
         <div className="items-center flex gap-4">
           <Image

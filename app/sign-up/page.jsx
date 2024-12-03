@@ -62,7 +62,7 @@ function Signup() {
   return (
     <div>
       <Header />
-      <div className="flex items-center gap-32">
+      <div className="md:flex items-center lg:gap-32 md:gap-14">
         <Image
           aria-hidden
           src="/authpic.svg"
@@ -71,7 +71,7 @@ function Signup() {
           height={800}
           className="h-full"
         />
-        <div>
+        <div className="px-[40px] py-10">
           <div className="flex justify-center flex-col items-center">
             <h1 className="font-semibold text-[24px] py-2">
               Create Your Account
