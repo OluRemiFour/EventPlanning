@@ -115,7 +115,7 @@ function Login() {
 
         document.cookie = `authToken=${data.access_token}; path=/; secure; HttpOnly`;
         // setActiveUser(data.access_token);
-        localStorage.setItem("authToken", data.access_token);
+        sessionStorage.setItem("authToken", data.access_token);
         handleNavigate();
       } else {
         const errorData = await response.json();

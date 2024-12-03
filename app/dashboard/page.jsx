@@ -13,7 +13,7 @@ function Dashboard() {
   const [createEvent, setCreateEvent] = useState(false);
   const [loggedInUser] = useAtom(activeUser);
 
-  const authUser = localStorage.getItem("authToken");
+  const authUser = sessionStorage.getItem("authToken");
   console.log(authUser);
 
   // if (!loggedInUser) {
