@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #00000;
+  --text-color: #fff;
+  --primary-color: #0062cc;
+  --secondary-color: #cc5a00;
+  --del-col: #ff3535;
+  --dash-color: #cce0f5;
+}
+
+.light-mode {
+  --primary-color: #0062cc;
+  --text-color: #fff;
+  --secondary-color: #cc5a00;
+  --del-col: #ff3535;
+  --dash-color: #cce0f5;
+}
+body {
+  /* color: var(--foreground); */
+  /* background: var(--background); */
+  font-family: Arial, Helvetica, sans-serif;
+}
