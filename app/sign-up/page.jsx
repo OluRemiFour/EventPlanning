@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { toast } from "react-toastify";
 import Header from "../components/Header";
+import { NextResponse } from "next/server";
 
 function Signup() {
   const [name, setName] = useState("");
@@ -41,6 +42,25 @@ function Signup() {
     const baseUrl = "/api/signup";
     setIsLoading(true);
 
+    // try {
+    //   const request = await fetch(baseUrl, {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify({ name, password, email }),
+    //   });
+
+    //   if (request.ok) {
+    //     const response = await request.json();
+    //     toast.success("User successfully registered, Procced to login");
+    //     handleNavigate();
+    //     setIsLoading(false);
+    //   } else {
+    //     return NextResponse.json(response);
+    //   }
+    // } catch (error) {
+    //   console.error("Error signing up:", error);
+    // }
+
     try {
       const request = await fetch(baseUrl, {
         method: "POST",
@@ -50,12 +70,39 @@ function Signup() {
 
       if (request.ok) {
         const response = await request.json();
-        toast.success("User successfully registered, Procced to login");
+        toast.success("User successfully registered, Proceed to login");
         handleNavigate();
+        setIsLoading(false);
+      } else {
+        if (request.status === 422) {
+          const errorResponse = await request.json();
+          const errorDetails = errorResponse.errors || {};
+          const detailedErrors = Object.entries(errorDetails)
+            .map(([field, messages]) => `${field}: ${messages.join(", ")}`)
+            .join("; ");
+
+          const errorMessage =
+            errorResponse.message || "Validation error occurred.";
+          toast.error(`${errorMessage} Details: ${detailedErrors}`);
+        } else if (request.status === 500) {
+          toast.error("Internal Server Error. Please try again later.");
+        } else {
+          const errorResponse = request.headers
+            .get("Content-Type")
+            ?.includes("application/json")
+            ? await request.json()
+            : { message: await request.text() };
+          const errorMessage =
+            errorResponse.message || "An unexpected error occurred.";
+          toast.error(errorMessage);
+        }
+
         setIsLoading(false);
       }
     } catch (error) {
+      toast.error(`Something went wrong: ${error.message}`);
       console.error("Error signing up:", error);
+      setIsLoading(false);
     }
   };
 

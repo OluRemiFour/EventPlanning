@@ -3,7 +3,14 @@
 import { useEffect, useState } from "react";
 import ReviewEvent from "./ReviewEvent";
 
-function EventTiming({ setEventTiming, eventTiming }) {
+function EventTiming({
+  setEventTiming,
+  eventTiming,
+  eventName,
+  eventType,
+  eventDescription,
+  selectedTags,
+}) {
   const [disabled, setDisabled] = useState(true);
   const [eventStartDate, setEventStartDate] = useState();
   const [eventEndDate, setEventEndDate] = useState();
@@ -14,13 +21,12 @@ function EventTiming({ setEventTiming, eventTiming }) {
   const [venuePlaceholder, setVenuePlaceholder] = useState("Online");
   const [inputPlaceValue, setPlaceInputValue] = useState("");
   const [inputTicketValue, setTicketInputValue] = useState("");
-
   const [reviewEvent, setReviewEvent] = useState(false);
   const [currentStep, setCurrentStep] = useState("eventTiming");
 
   const handleTicketChange = (event) => {
     if (event.target.value === "Free") {
-      setPlaceholder("Free");
+      setPlaceholder("Free Event");
     } else if (event.target.value === "Paid") {
       setPlaceholder("Input ticket price");
     }
@@ -41,7 +47,7 @@ function EventTiming({ setEventTiming, eventTiming }) {
   const handlePlaceInputChange = (event) => {
     setPlaceInputValue(event.target.value);
   };
-  const handleTicketInputChange = (event) => {
+  const handleTicketInput = (event) => {
     setTicketInputValue(event.target.value);
   };
 
@@ -51,7 +57,9 @@ function EventTiming({ setEventTiming, eventTiming }) {
       setEventEndDate.length < 1 ||
       eventPricing.length < 1 ||
       eventPlace.length < 1 ||
-      eventAttendee.length < 1
+      eventAttendee.length < 1 ||
+      venuePlaceholder.length < 2 ||
+      inputTicketValue.length < 2
     ) {
       setDisabled(true);
       return;
@@ -59,6 +67,8 @@ function EventTiming({ setEventTiming, eventTiming }) {
       setDisabled(false);
     }
   };
+
+  console.log(inputTicketValue);
 
   useEffect(() => {
     handleUserOptions();
@@ -70,6 +80,15 @@ function EventTiming({ setEventTiming, eventTiming }) {
     } else {
       setCurrentStep("eventTiming");
     }
+
+    console.log(
+      eventStartDate,
+      eventEndDate,
+      eventAttendee,
+      eventPricing,
+      inputPlaceValue,
+      inputTicketValue
+    );
   };
 
   return (
@@ -99,6 +118,7 @@ function EventTiming({ setEventTiming, eventTiming }) {
                     onChange={(e) => setEventStartDate(e.target.value)}
                     className="rounded-lg border px-2 py-3 outline-none w-full"
                     placeholder="12/15/2024 09:00 AM"
+                    min={new Date().toISOString().slice(0, 16)}
                   />
                 </div>
                 <div className="pb-2">
@@ -111,6 +131,7 @@ function EventTiming({ setEventTiming, eventTiming }) {
                     onChange={(e) => setEventEndDate(e.target.value)}
                     className="rounded-lg border px-2 py-3 outline-none w-full"
                     placeholder="12/15/2024 05:00 PM"
+                    min={new Date().toISOString().slice(0, 16)}
                   />
                 </div>
               </div>
@@ -176,7 +197,7 @@ function EventTiming({ setEventTiming, eventTiming }) {
                       <input
                         type="radio"
                         name="ticket"
-                        required
+                        // required
                         value="Free"
                         onChange={handleTicketChange}
                       />
@@ -188,7 +209,7 @@ function EventTiming({ setEventTiming, eventTiming }) {
                       <input
                         type="radio"
                         name="ticket"
-                        required
+                        // required
                         value="Paid"
                         onChange={handleTicketChange}
                       />
@@ -200,7 +221,7 @@ function EventTiming({ setEventTiming, eventTiming }) {
                   <input
                     className="rounded-lg border px-2 py-3 outline-none w-full"
                     placeholder={placeholder}
-                    handleTicketInputChange={handleTicketInputChange}
+                    onChange={handleTicketInput}
                   />
                 </label>
               </div>
@@ -237,7 +258,22 @@ function EventTiming({ setEventTiming, eventTiming }) {
         </div>
       )}
 
-      {currentStep === "reviewEvent" && <ReviewEvent />}
+      {currentStep === "reviewEvent" && (
+        <ReviewEvent
+          eventStartDate={eventStartDate}
+          eventEndDate={eventEndDate}
+          eventAttendee={eventAttendee}
+          eventPricing={eventPricing}
+          setEventPricing={setEventPricing}
+          eventPlace={inputPlaceValue}
+          inputTicketValue={inputTicketValue}
+          setTicketInputValue={setTicketInputValue}
+          eventName={eventName}
+          eventType={eventType}
+          eventDescription={eventDescription}
+          selectedTags={selectedTags}
+        />
+      )}
     </>
   );
 }

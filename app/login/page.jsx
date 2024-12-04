@@ -5,18 +5,13 @@ import { useEffect, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { toast } from "react-toastify";
 import Header from "../components/Header";
-import { useAtom, useSetAtom } from "jotai";
-import { activeUser } from "../lib/User";
 
 function Login() {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [disabled, setDisabled] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const setActiveUser = useSetAtom(activeUser);
-  const [loggedInUser] = useAtom(activeUser);
 
-  console.log(loggedInUser);
   const handleUserInput = () => {
     if (password.trim().length < 1 || !email.includes("@")) {
       // setError("Please fill out all fields correctly.");
@@ -114,15 +109,34 @@ function Login() {
         toast.success("Login successful! Redirecting...");
 
         document.cookie = `authToken=${data.access_token}; path=/; secure; HttpOnly`;
-        // setActiveUser(data.access_token);
         sessionStorage.setItem("authToken", data.access_token);
         handleNavigate();
       } else {
         const errorData = await response.json();
-        toast.error(errorData.message || "Login failed, please try again."); // Show error message
+        let errorMessage = "Login failed, please try again.";
+
+        if (errorData.message?.toLowerCase().includes("email")) {
+          errorMessage = "The email provided is not registered or invalid.";
+        } else if (errorData.message?.toLowerCase().includes("password")) {
+          errorMessage = "Incorrect password. Please try again.";
+        } else if (errorData.message) {
+          errorMessage = errorData.message;
+        }
+
+        toast.error(errorMessage);
       }
     } catch (error) {
       console.error("Error logging in:", error);
+      let errorMessage =
+        "An unexpected error occurred. Please try again later.";
+
+      if (error.message?.toLowerCase().includes("network")) {
+        errorMessage = "Network error. Please check your internet connection.";
+      } else if (error.name === "TypeError") {
+        errorMessage = "Unable to reach the server. Please try again later.";
+      }
+
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }

@@ -1,25 +1,22 @@
 import React, { useEffect, useState } from "react";
 import EventTiming from "./EventTiming";
 
-function CreateEvent({ setCreateEvent }) {
-  const eventTags = [
-    "Networking",
-    "Marketing",
-    "Tech Event",
-    "Business",
-    "Public Speaking",
-    "Entrepreneurship",
-    "Finance & Investment",
-    "Motivational",
-    "Others",
-  ];
+function CreateEvent({ setCreateEvent, eventsTypes, eventsTags }) {
   const [disabled, setDisabled] = useState(true);
-  const [selectedTag, setSelectedTag] = useState(null);
   const [eventName, setEventName] = useState("");
   const [eventType, setEventType] = useState(null);
   const [eventDescription, setEventDescription] = useState("");
   const [eventDetails, setEventDetails] = useState(true);
   const [eventTiming, setEventTiming] = useState(false);
+  const [selectedTags, setSelectedTags] = useState([]);
+
+  const toggleTagSelection = (tag) => {
+    setSelectedTags((prevTags) =>
+      prevTags.includes(tag)
+        ? prevTags.filter((selectedTag) => selectedTag !== tag)
+        : [...prevTags, tag]
+    );
+  };
 
   const handleUserOptions = () => {
     if (
@@ -77,16 +74,11 @@ function CreateEvent({ setCreateEvent }) {
                   onChange={(e) => setEventType(e.target.value)}
                   className="rounded-lg border px-2 py-3 outline-none "
                 >
-                  <option value="0">Select Event Type</option>
-                  <option value="1">Conference</option>
-                  <option value="2">Workshop</option>
-                  <option value="4">Webinar</option>
-                  <option value="5">Networking </option>
-                  <option value="6">Party or Celebration</option>
-                  <option value="7">Fundraiser</option>
-                  <option value="8">Product Launch</option>
-                  <option value="9">Meetup</option>
-                  <option value="10">Hackathon</option>
+                  {eventsTypes.map((eventType, index) => (
+                    <option key={index} value={eventType.id}>
+                      {eventType}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="flex-col flex my-2 space-y-2">
@@ -106,15 +98,15 @@ function CreateEvent({ setCreateEvent }) {
               <div>
                 <h1 className="font-semibold mb-4">Event Tags (Optional)</h1>
                 <div className="grid grid-cols-3 gap-3">
-                  {eventTags.map((tag, index) => (
+                  {eventsTags?.map((tag, index) => (
                     <button
                       key={index}
                       onClick={(event) => {
                         event.preventDefault();
-                        setSelectedTag(tag);
+                        toggleTagSelection(tag);
                       }}
                       className={`${
-                        selectedTag === tag
+                        selectedTags.includes(tag)
                           ? "bg-[#00458f] text-white"
                           : "bg-gray-100 text-[#999999]"
                       } flex items-center justify-center p-2 rounded-full shadow-sm`}
@@ -160,6 +152,10 @@ function CreateEvent({ setCreateEvent }) {
         <EventTiming
           setEventTiming={setEventTiming}
           eventTiming={eventTiming}
+          eventName={eventName}
+          eventType={eventType}
+          eventDescription={eventDescription}
+          selectedTags={selectedTags}
         />
       )}
     </>

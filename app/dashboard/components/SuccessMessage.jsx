@@ -2,9 +2,20 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
-function SuccessMessage() {
+function SuccessMessage({ eventLink }) {
   const handleRefresh = () => {
     window.location.reload();
+  };
+
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText();
+      setCopied(true);
+    } catch (err) {
+      console.error("Failed to copy the link:", err);
+    }
   };
   return (
     <div
@@ -38,9 +49,12 @@ function SuccessMessage() {
             <p className="text-[#00458f] cursor-pointer">Copy Link</p>
           </div>
 
-          <p className="text-[#7D7D7D] my-4 rounded-lg border bg-[#f0f0f0] px-2 py-3 outline-none w-full">
-            https://eventsplatform.com/event/future-of-tech-2024
-          </p>
+          <button
+            onClick={handleCopy}
+            className="text-[#7D7D7D] my-4 rounded-lg border bg-[#f0f0f0] px-2 py-3 outline-none w-full"
+          >
+            {copied ? "Copied!" : eventLink}
+          </button>
         </div>
       </div>
     </div>

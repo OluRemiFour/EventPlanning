@@ -1,10 +1,28 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SuccessMessage from "./SuccessMessage";
+import { toast } from "react-toastify";
 
-function ReviewEvent() {
+function ReviewEvent({
+  eventStartDate,
+  eventEndDate,
+  eventAttendee,
+  eventPricing,
+  setEventPricing,
+  eventPlace,
+  inputTicketValue,
+  setTicketInputValue,
+  eventName,
+  eventType,
+  eventDescription,
+  selectedTags,
+}) {
   const [currentStep, setCurrentStep] = useState("reviewEvent");
+  const [saveToDraft, setSaveToDraft] = useState(false);
+  const authUser = sessionStorage.getItem("authToken");
+  const [isLoading, setIsLoading] = useState(false);
+  const [eventLink, setEventLink] = useState([""]);
 
   const handleNextEvent = () => {
     if (currentStep === "reviewEvent") {
@@ -13,6 +31,118 @@ function ReviewEvent() {
       setCurrentStep("reviewEvent");
     }
   };
+
+  if (eventPricing === "Free") {
+    setTicketInputValue(0);
+  }
+  console.log();
+  const handleCreateEvent = async (token) => {
+    const baseUrl = "/api/createEvent";
+
+    if (!token) {
+      console.error("Token is required to create an event.");
+      return;
+    }
+
+    if (!eventName || !eventType || !eventStartDate || !eventEndDate) {
+      console.error("Missing required fields");
+      return;
+    }
+
+    const formatDate = (date) => {
+      const d = new Date(date);
+      return d.toISOString().slice(0, 19).replace("T", " ");
+    };
+
+    const formattedStartDate = formatDate(eventStartDate);
+    const formattedEndDate = formatDate(eventEndDate);
+    setIsLoading(true);
+    try {
+      const response = await fetch(baseUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: eventName,
+          type: eventType,
+          description: eventDescription,
+          tags: selectedTags,
+          start_date: formattedStartDate,
+          end_date: formattedEndDate,
+          ticket_price: Number(inputTicketValue),
+          location_link: eventPlace,
+          attendance_capacity: Number(eventAttendee),
+          ticket_pricing: eventPricing,
+          draft: saveToDraft,
+        }),
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        toast.success("Event created successfully",);
+        setIsLoading(false);
+        handleNextEvent();
+        setEventLink(responseData.data);
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to create event:", errorData);
+      }
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error creating event:", error.message);
+    }
+  };
+
+  // const handleCreateEvent = async (token) => {
+  //   const baseUrl = "/api/createEvent";
+
+  //   if (!token) {
+  //     console.error("Token is required to create an event.");
+  //     return;
+  //   }
+
+  //   try {
+  //     const response = await fetch(baseUrl, {
+  //       method: "POST",
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //         "Content-Type": "application/json",
+  //         Accept: "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         name: eventName,
+  //         type: eventType,
+  //         description: eventDescription,
+  //         start_date: eventStartDate,
+  //         end_date: eventEndDate,
+  //         attendance_capacity: Number(eventAttendee),
+  //         ticket_price: eventPricing,
+  //         location_link: eventPlace,
+  //         tags: selectedTags,
+  //         ticket_pricing: Number(inputTicketValue),
+  //         draft: saveToDraft,
+  //       }),
+  //     });
+
+  //     const contentType = response.headers.get("content-type");
+
+  //     if (response.ok) {
+  //       const responseData = await response.json();
+  //       console.log("Event created successfully:", responseData);
+  //     } else if (contentType && contentType.includes("application/json")) {
+  //       const errorData = await response.json();
+  //       console.error("Failed to create event:", errorData);
+  //     } else {
+  //       const errorText = await response.text();
+  //       console.error("Unexpected response format:", errorText);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error creating event:", error.message);
+  //   }
+  // };
+
   return (
     <>
       {currentStep === "reviewEvent" && (
@@ -30,36 +160,36 @@ function ReviewEvent() {
               <div className="space-y-2">
                 <p className="py-1">Event Event Name</p>
                 <p className="text-[#7D7D7D] rounded-lg border bg-[#f0f0f0] px-2 py-3 outline-none w-[25rem]">
-                  Advanced UX Design Workshop
+                  {eventName}
                 </p>
               </div>
               <div className="space-y-2 py-4">
                 <p className="">Event Type</p>
                 <p className="text-[#7D7D7D] rounded-lg border bg-[#f0f0f0] px-2 py-3 outline-none w-full">
-                  Conference
+                  {eventType}
                 </p>
               </div>
               <div className="space-y-2 py-1">
                 <p className="">Event Schedule</p>
                 <div className="flex gap-2 items-center">
                   <p className="text-[#7D7D7D] rounded-lg border bg-[#f0f0f0] px-2 py-3 outline-none w-full">
-                    Start: 12/15/2024 05:00 PM
+                    {eventStartDate}
                   </p>
                   <p className="text-[#7D7D7D] rounded-lg border bg-[#f0f0f0] px-2 py-3 outline-none w-full">
-                    End: 12/15/2024 05:00 PM
+                    {eventEndDate}
                   </p>
                 </div>
               </div>
               <div className="space-y-2 py-1">
                 <p className="">Location</p>
                 <p className="text-[#7D7D7D] rounded-lg border bg-[#f0f0f0] px-2 py-3 outline-none w-full">
-                  Online
+                  {eventPlace}
                 </p>
               </div>
               <div className="space-y-2 py-1">
                 <p className="">Ticket</p>
                 <p className="text-[#7D7D7D] rounded-lg border bg-[#f0f0f0] px-2 py-3 outline-none w-full">
-                  Free
+                  {eventPricing}
                 </p>
               </div>
 
@@ -68,6 +198,7 @@ function ReviewEvent() {
                   onClick={(event) => {
                     event.preventDefault();
                     setEventTiming(false);
+                    setSaveToDraft(true);
                   }}
                   className="text-[var(--primary-color)] w-[50%] cursor-pointer rounded-[8px] py-3 px-4 border border-[var(--primary-color)]"
                 >
@@ -77,11 +208,15 @@ function ReviewEvent() {
                   type="submit"
                   onClick={(event) => {
                     event.preventDefault();
-                    handleNextEvent();
+                    handleCreateEvent(authUser);
                   }}
                   className={`bg-[var(--primary-color)] text-white w-[50%] rounded-[8px] py-3 px-4 transition duration-200`}
                 >
-                  Publish Event
+                  {isLoading ? (
+                    <div className="animate-spin justity-center items-center flex rounded-full h-5 w-5 mx-auto text-center border-b-2 border-t-2 border-[#ffff]" />
+                  ) : (
+                    "Publish Event"
+                  )}
                 </button>
               </div>
             </form>
@@ -89,7 +224,9 @@ function ReviewEvent() {
         </div>
       )}
 
-      {currentStep === "successMessage" && <SuccessMessage />}
+      {currentStep === "successMessage" && (
+        <SuccessMessage eventLink={eventLink} />
+      )}
     </>
   );
 }
