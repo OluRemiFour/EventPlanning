@@ -10,6 +10,7 @@ function ReviewEvent({
   eventAttendee,
   eventPricing,
   setEventPricing,
+  setEventTiming,
   eventPlace,
   inputTicketValue,
   setTicketInputValue,
@@ -33,9 +34,8 @@ function ReviewEvent({
   };
 
   if (eventPricing === "Free") {
-    setTicketInputValue(0);
+    setTicketInputValue(Number(0));
   }
-  console.log();
   const handleCreateEvent = async (token) => {
     const baseUrl = "/api/createEvent";
 
@@ -81,67 +81,19 @@ function ReviewEvent({
 
       if (response.ok) {
         const responseData = await response.json();
-        toast.success("Event created successfully",);
+        toast.success("Event created successfully");
         setIsLoading(false);
         handleNextEvent();
         setEventLink(responseData.data);
       } else {
         const errorData = await response.json();
-        console.error("Failed to create event:", errorData);
+        console.log("Failed to create event:", errorData);
       }
       setIsLoading(false);
     } catch (error) {
       console.error("Error creating event:", error.message);
     }
   };
-
-  // const handleCreateEvent = async (token) => {
-  //   const baseUrl = "/api/createEvent";
-
-  //   if (!token) {
-  //     console.error("Token is required to create an event.");
-  //     return;
-  //   }
-
-  //   try {
-  //     const response = await fetch(baseUrl, {
-  //       method: "POST",
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //         "Content-Type": "application/json",
-  //         Accept: "application/json",
-  //       },
-  //       body: JSON.stringify({
-  //         name: eventName,
-  //         type: eventType,
-  //         description: eventDescription,
-  //         start_date: eventStartDate,
-  //         end_date: eventEndDate,
-  //         attendance_capacity: Number(eventAttendee),
-  //         ticket_price: eventPricing,
-  //         location_link: eventPlace,
-  //         tags: selectedTags,
-  //         ticket_pricing: Number(inputTicketValue),
-  //         draft: saveToDraft,
-  //       }),
-  //     });
-
-  //     const contentType = response.headers.get("content-type");
-
-  //     if (response.ok) {
-  //       const responseData = await response.json();
-  //       console.log("Event created successfully:", responseData);
-  //     } else if (contentType && contentType.includes("application/json")) {
-  //       const errorData = await response.json();
-  //       console.error("Failed to create event:", errorData);
-  //     } else {
-  //       const errorText = await response.text();
-  //       console.error("Unexpected response format:", errorText);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error creating event:", error.message);
-  //   }
-  // };
 
   return (
     <>

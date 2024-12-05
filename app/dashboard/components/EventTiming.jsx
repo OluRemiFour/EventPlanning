@@ -68,8 +68,6 @@ function EventTiming({
     }
   };
 
-  console.log(inputTicketValue);
-
   useEffect(() => {
     handleUserOptions();
   }, [eventStartDate, eventEndDate, eventPricing, eventPlace, eventAttendee]);
@@ -80,15 +78,6 @@ function EventTiming({
     } else {
       setCurrentStep("eventTiming");
     }
-
-    console.log(
-      eventStartDate,
-      eventEndDate,
-      eventAttendee,
-      eventPricing,
-      inputPlaceValue,
-      inputTicketValue
-    );
   };
 
   return (
@@ -272,6 +261,7 @@ function EventTiming({
           eventType={eventType}
           eventDescription={eventDescription}
           selectedTags={selectedTags}
+          setEventTiming={setEventTiming}
         />
       )}
     </>

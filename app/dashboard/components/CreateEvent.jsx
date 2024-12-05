@@ -24,11 +24,9 @@ function CreateEvent({ setCreateEvent, eventsTypes, eventsTags }) {
       !eventType ||
       eventDescription.trim().length < 1
     ) {
-      // setError("Please fill out all fields correctly.");
       setDisabled(true);
       return;
     }
-    // setError("");
     setDisabled(false);
   };
 

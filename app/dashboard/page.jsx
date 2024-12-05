@@ -1,13 +1,13 @@
 "use client";
-
-import { useEffect, useState } from "react";
+import { activeUser } from "@/app/lib/User";
+import { useSetAtom } from "jotai";
+import { useEffect, useRef, useState } from "react";
 import { BsCalendarEvent, BsFillCalendarEventFill } from "react-icons/bs";
 import { IoPeopleSharp } from "react-icons/io5";
 import CreateEvent from "./components/CreateEvent";
-import { useAtom, useSetAtom } from "jotai";
-import { activeUser } from "@/app/lib/User";
-import { toast } from "react-toastify";
 import ViewEvent from "./components/ViewEvent";
+import LoadingScreen from "./components/Loader";
+import EditEvent from "./components/EditEvent";
 
 function Dashboard() {
   const [event, setEvent] = useState("all");
@@ -20,6 +20,14 @@ function Dashboard() {
   const [viewEvent, setViewEvent] = useState([""]);
   const [attendance, setAttendance] = useState([""]);
   const authUser = sessionStorage.getItem("authToken");
+  const [currentEvent, setCurrentEvent] = useState();
+  const [currentEventId, setCurrentEventId] = useState();
+  const [eventData, setEventData] = useState([""]);
+  const [viewEventData, setViewEventData] = useState(false);
+  const [editEvent, setEditEvent] = useState(false);
+  const eventTagsCache = useRef(null);
+  const eventTypeCache = useRef(null);
+  const userProfile = useRef(null);
 
   useEffect(() => {
     if (!authUser) {
@@ -33,6 +41,10 @@ function Dashboard() {
   };
 
   const getUserProfile = async (token) => {
+    if (userProfile.current) {
+      setUserDetails(userProfile.current);
+      return;
+    }
     const baseUrl = "/api/userProfile";
     try {
       const request = await fetch(baseUrl, {
@@ -45,16 +57,12 @@ function Dashboard() {
 
       if (request.ok) {
         const response = await request.json();
+        userProfile.current = response;
         setUserDetails(response);
       } else {
         const errorResponse = await request.json();
-        // console.error("Error Response:", errorResponse);
-        toast.error(errorResponse.message || "Failed to fetch profile");
       }
-    } catch (error) {
-      // console.error("Error fetching user profile:", error);
-      toast.error("An error occurred while fetching user profile.");
-    }
+    } catch (error) {}
   };
 
   const getAllEvents = async (token) => {
@@ -70,15 +78,16 @@ function Dashboard() {
       if (request.ok) {
         const response = await request.json();
         setViewEvent(response.data);
-        console.log("All Events:", response);
+        // console.log("All Events:", response);
       }
-    } catch (error) {
-      console.error("Error fetching events:", error);
-      // toast.error("An error occurred while fetching events.");
-    }
+    } catch (error) {}
   };
 
   const getEventTypes = async () => {
+    if (eventTypeCache.current) {
+      setEvetTypes(eventTypeCache.current);
+      return;
+    }
     const baseUrl = "/api/eventTypes";
     try {
       const request = await fetch(baseUrl, {
@@ -90,31 +99,57 @@ function Dashboard() {
       });
       if (request.ok) {
         const response = await request.json();
+        eventTypeCache.current = response.data;
         setEvetTypes(response.data);
-        console.log("Event Types:", response);
+        // console.log("Event Types:", response);
+      }
+    } catch (error) {}
+  };
+
+  const getEventTags = async () => {
+    if (eventTagsCache.current) {
+      setEventTags(eventTagsCache.current);
+      return;
+    }
+
+    const baseUrl = "/api/eventTags";
+    try {
+      const request = await fetch(baseUrl, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (request.ok) {
+        const response = await request.json();
+        eventTagsCache.current = response.data;
+        setEventTags(response.data);
       }
     } catch (error) {
       console.error("Error fetching event types:", error);
     }
   };
 
-  const getEventTags = async () => {
-    const baseUrl = "/api/eventTags";
+  const handleViewEvent = async (token, currentEventId) => {
+    const baseUrl = `/api/viewSingleEvent?id=${currentEventId}`;
     try {
       const request = await fetch(baseUrl, {
         method: "GET",
         headers: {
-          // Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
+
       if (request.ok) {
         const response = await request.json();
-        setEventTags(response.data);
-        console.log("Event Types:", response);
+        setEventData(response.data);
+      } else {
+        const errorData = await request.json();
+        console.error("Error fetching event:", errorData);
       }
     } catch (error) {
-      console.error("Error fetching event types:", error);
+      console.error("Error fetching events:", error);
     }
   };
 
@@ -135,6 +170,15 @@ function Dashboard() {
       })
     );
   }, [viewEvent]);
+
+  useEffect(() => {
+    setCurrentEventId(
+      currentEvent?.map((event) => {
+        return event.id;
+      })
+    );
+  }, [viewEvent, currentEvent]);
+
   useEffect(() => {
     setAttendance(
       viewEvent?.map((event) => {
@@ -142,6 +186,17 @@ function Dashboard() {
       })
     );
   }, [viewEvent]);
+
+  const handleSelectedEvent = (eventCLicked) => {
+    const filteredEvents = viewEvent.filter((event) => {
+      return event.id === eventCLicked;
+    });
+    setCurrentEvent(filteredEvents);
+  };
+
+  useEffect(() => {
+    handleViewEvent(authUser, currentEventId);
+  }, [authUser, currentEventId]);
 
   const totalAttendance = attendance?.reduce((acc, event) => {
     return acc + event;
@@ -204,7 +259,7 @@ function Dashboard() {
             onClick={() => handleEvent("all")}
             className={`${
               event === "all" ? "bg-[#00458f] text-white" : "text-[#999999]"
-            } rounded-full px-4 py-2`}
+            } rounded-full text-sm px-4 py-2`}
           >
             All Event
           </button>
@@ -214,7 +269,7 @@ function Dashboard() {
               event === "upcoming"
                 ? "bg-[#00458f] text-white"
                 : "text-[#999999]"
-            } rounded-full px-4 py-2`}
+            } rounded-full text-sm px-4 py-2`}
           >
             Upcoming Event
           </button>
@@ -267,65 +322,197 @@ function Dashboard() {
               </th>
             </tr>
           </thead>
-          <tbody className="">
-            {viewEvent?.map((event, index) => (
-              <tr key={index} className="border-b border">
-                <td className="border px-4 py-4 text-sm text-left text-black">
-                  {event &&
-                    event.name?.charAt(0).toUpperCase() + event.name?.slice(1)}
-                </td>
-                <td className="border px-4 py-4 text-sm text-left text-black">
-                  {event.start_date}
-                </td>
-                <td className="border px-4 py-4 text-sm text-left text-black">
-                  {event.type}
-                </td>
-                <td className="border px-4 py-4 text-sm text-left text-black">
-                  {event.attendance_capacity} {""} {event && "attendees"}
-                </td>
-                <td className="border px-4 py-4 text-sm text-left text-black">
-                  {event && "-"}
-                </td>
-                <td>
-                  {event && (
-                    <p
-                      className={`border px-2 text-sm text-center ${
-                        event.status === "upcoming"
-                          ? "bg-[#00458f]"
-                          : "bg-[#CC5A00]"
-                      } text-white rounded-full mx-2 py-1 outline-none`}
-                    >
-                      {event.status}
-                    </p>
-                  )}
-                </td>
-
-                {event && (
+          {event === "all" && (
+            <tbody className="">
+              {viewEvent?.map((event, index) => (
+                <tr key={index} className="border-b border">
+                  <td className="border px-4 py-4 text-sm text-left text-black">
+                    {event &&
+                      event.name?.charAt(0).toUpperCase() +
+                        event.name?.slice(1)}
+                  </td>
+                  <td className="border px-4 py-4 text-sm text-left text-black">
+                    {event.start_date}
+                  </td>
+                  <td className="border px-4 py-4 text-sm text-left text-black">
+                    {event.type}
+                  </td>
+                  <td className="border px-4 py-4 text-sm text-left text-black">
+                    {event.attendance_capacity} {""} {event && "attendees"}
+                  </td>
+                  <td className="border px-4 py-4 text-sm text-left text-black">
+                    {event && "-"}
+                  </td>
                   <td>
-                    {event.status === "upcoming" ? (
+                    {event && (
+                      <p
+                        className={`border px-2 text-sm text-center ${
+                          event.status === "upcoming"
+                            ? "bg-[#00458f]"
+                            : "bg-[#CC5A00]"
+                        } text-white rounded-full mx-2 py-1 outline-none`}
+                      >
+                        {event.status}
+                      </p>
+                    )}
+                  </td>
+
+                  {event && (
+                    <td>
+                      {event.status === "upcoming" ? (
+                        <div className="flex gap-2 items-left">
+                          <p
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleSelectedEvent(event.id);
+                              handleViewEvent(authUser, currentEventId);
+                              setViewEventData(true);
+                            }}
+                            className="py-2 px-3 cursor-pointer w-full text-sm bg-[#E2E2E2] text-[#00458f] text-center rounded-md"
+                          >
+                            View
+                          </p>
+                          <p
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleSelectedEvent(event.id);
+                              // handleViewEvent(authUser, currentEventId);
+                              setEditEvent(true);
+                            }}
+                            className="bg-[#00458f] w-full text-sm cursor-pointer text-white p-2 rounded-md text-center"
+                          >
+                            Edit
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="flex gap-2 items-left">
+                          <p
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setViewEventData(true);
+                              handleViewEvent(authUser, currentEventId);
+                            }}
+                            className="p-2 bg-[#E2E2E2] w-full text-sm cursor-pointer text-[#00458f] text-center rounded-md"
+                          >
+                            View
+                          </p>
+                          <p className="bg-[#FF3535] w-full text-sm cursor-pointer text-white p-2 rounded-md text-center">
+                            Delete
+                          </p>
+                        </div>
+                      )}
+                    </td>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          )}
+
+          {event === "upcoming" && (
+            <tbody className="">
+              {viewEvent
+                ?.filter((event) => event.status === "upcoming")
+                .map((event, index) => (
+                  <tr key={index} className="border-b border">
+                    <td className="border px-4 py-4 text-sm text-left text-black">
+                      {event &&
+                        event.name?.charAt(0).toUpperCase() +
+                          event.name?.slice(1)}
+                    </td>
+                    <td className="border px-4 py-4 text-sm text-left text-black">
+                      {event.start_date}
+                    </td>
+                    <td className="border px-4 py-4 text-sm text-left text-black">
+                      {event.type}
+                    </td>
+                    <td className="border px-4 py-4 text-sm text-left text-black">
+                      {event.attendance_capacity} {""} {event && "attendees"}
+                    </td>
+                    <td className="border px-4 py-4 text-sm text-left text-black">
+                      {event && "-"}
+                    </td>
+                    <td>
+                      <p
+                        className={`border px-2 text-sm text-center bg-[#00458f] text-white rounded-full mx-2 py-1 outline-none`}
+                      >
+                        {event.status}
+                      </p>
+                    </td>
+                    <td>
                       <div className="flex gap-2 items-left">
-                        <p className="py-2 px-3 cursor-pointer w-full bg-[#E2E2E2] text-[#00458f] text-center rounded-md">
+                        <p
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleSelectedEvent(event.id);
+                            handleViewEvent(authUser, currentEventId);
+                            setViewEventData(true);
+                          }}
+                          className="py-2 px-3 cursor-pointer w-full text-sm bg-[#E2E2E2] text-[#00458f] text-center rounded-md"
+                        >
                           View
                         </p>
-                        <p className="bg-[#00458f] w-full cursor-pointer text-white p-2 rounded-md text-center">
+                        <p className="bg-[#00458f] w-full text-sm cursor-pointer text-white p-2 rounded-md text-center">
                           Edit
                         </p>
                       </div>
-                    ) : (
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          )}
+
+          {event === "completed" && (
+            <tbody className="">
+              {viewEvent
+                ?.filter((event) => event.status === "completed")
+                .map((event, index) => (
+                  <tr key={index} className="border-b border">
+                    <td className="border px-4 py-4 text-sm text-left text-black">
+                      {event &&
+                        event.name?.charAt(0).toUpperCase() +
+                          event.name?.slice(1)}
+                    </td>
+                    <td className="border px-4 py-4 text-sm text-left text-black">
+                      {event.start_date}
+                    </td>
+                    <td className="border px-4 py-4 text-sm text-left text-black">
+                      {event.type}
+                    </td>
+                    <td className="border px-4 py-4 text-sm text-left text-black">
+                      {event.attendance_capacity} {""} {event && "attendees"}
+                    </td>
+                    <td className="border px-4 py-4 text-sm text-left text-black">
+                      {event && "-"}
+                    </td>
+                    <td>
+                      <p
+                        className={`border px-2 text-sm text-center bg-[#CC5A00] text-white rounded-full mx-2 py-1 outline-none`}
+                      >
+                        {event.status}
+                      </p>
+                    </td>
+                    <td>
                       <div className="flex gap-2 items-left">
-                        <p className="p-2 bg-[#E2E2E2] w-full cursor-pointer text-[#00458f] text-center rounded-md">
+                        <p
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleSelectedEvent(event.id);
+                            handleViewEvent(authUser, currentEventId);
+                            setViewEventData(true);
+                          }}
+                          className="p-2 bg-[#E2E2E2] w-full text-sm cursor-pointer text-[#00458f] text-center rounded-md"
+                        >
                           View
                         </p>
-                        <p className="bg-[#FF3535] w-full cursor-pointer text-white p-2 rounded-md text-center">
+                        <p className="bg-[#FF3535] w-full text-sm cursor-pointer text-white p-2 rounded-md text-center">
                           Delete
                         </p>
                       </div>
-                    )}
-                  </td>
-                )}
-              </tr>
-            ))}
-          </tbody>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          )}
         </table>
 
         {viewEvent.map(
@@ -356,6 +543,34 @@ function Dashboard() {
           eventsTags={eventsTags}
           setCreateEvent={setCreateEvent}
         />
+      )}
+      {viewEventData && (
+        <>
+          {eventData === undefined || null ? (
+            <LoadingScreen />
+          ) : (
+            <ViewEvent
+              eventData={eventData}
+              setViewEventData={setViewEventData}
+            />
+          )}
+        </>
+      )}
+
+      {editEvent && (
+        <>
+          {eventData === undefined || null ? (
+            <LoadingScreen />
+          ) : (
+            <EditEvent
+              eventData={eventData}
+              setViewEventData={setViewEventData}
+              setEditEvent={setEditEvent}
+              currentEventId={currentEventId}
+              authUser={authUser}
+            />
+          )}
+        </>
       )}
     </div>
   );
