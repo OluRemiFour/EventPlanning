@@ -72,7 +72,7 @@ function CreateEvent({ setCreateEvent, eventsTypes, eventsTags }) {
                   onChange={(e) => setEventType(e.target.value)}
                   className="rounded-lg border px-2 py-3 outline-none "
                 >
-                  {eventsTypes.map((eventType, index) => (
+                  {eventsTypes?.map((eventType, index) => (
                     <option key={index} value={eventType.id}>
                       {eventType}
                     </option>

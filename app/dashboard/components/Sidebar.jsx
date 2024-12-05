@@ -68,7 +68,7 @@ function Sidebar() {
       </div>
 
       <div className="flex-col flex space-y-1 my-4 items-center gap-2">
-        {menuItems.map(({ id, label, icon: Icon, href }) => {
+        {menuItems?.map(({ id, label, icon: Icon, href }) => {
           const isActive = pathname === href;
 
           return (

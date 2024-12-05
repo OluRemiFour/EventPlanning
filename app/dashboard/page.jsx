@@ -414,7 +414,6 @@ function Dashboard() {
                             onClick={(e) => {
                               e.preventDefault();
                               handleSelectedEvent(event.id);
-                              // handleViewEvent(authUser, currentEventId);
                               setEditEvent(true);
                             }}
                             className="bg-[#00458f] w-full text-sm cursor-pointer text-white p-2 rounded-md text-center"
@@ -560,7 +559,7 @@ function Dashboard() {
           )}
         </table>
 
-        {viewEvent.map(
+        {viewEvent?.map(
           (event, index) =>
             event.length < 1 && (
               <div key={index} className="w-fit text-center mt-14 mx-auto">
