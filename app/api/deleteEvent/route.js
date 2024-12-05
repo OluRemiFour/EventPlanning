@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-export async function PUT(req) {
+export async function DELETE(req) {
   const authorizationHeader = req.headers.get("Authorization");
 
   if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
@@ -18,47 +18,16 @@ export async function PUT(req) {
     );
   }
 
-  const {
-    name,
-    type,
-    description,
-    tags,
-    start_date,
-    end_date,
-    location_link,
-    attendance_capacity,
-    ticket_pricing,
-    ticket_price,
-    draft,
-  } = await req.json();
-
-  const data = {
-    name,
-    type,
-    description,
-    tags,
-    start_date,
-    end_date,
-    location_link,
-    attendance_capacity,
-    ticket_pricing,
-    ticket_price,
-    draft,
-  };
-
-  console.log("Data sent to backend:", data);
-
   try {
     const response = await fetch(
-      `https://event-planner-backend-api.onrender.com/api/v1/user/event/update/${eventId}`,
+      `https://event-planner-backend-api.onrender.com/api/v1/user/event/delete/${eventId}`,
       {
-        method: "PUT",
+        method: "DELETE",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(data),
       }
     );
 

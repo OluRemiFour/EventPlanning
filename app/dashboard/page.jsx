@@ -36,6 +36,47 @@ function Dashboard() {
     }
   }, [authUser]);
 
+  const totalAttendance = attendance?.reduce((acc, event) => {
+    return acc + event;
+  }, 0);
+
+  const handleRefresh = () => {
+    setTimeout(() => {
+      window.location.reload();
+    }, 2000);
+  };
+
+  const handleDeleteEvent = async (token, currentEventId) => {
+    const baseUrl = `/api/deleteEvent?id=${currentEventId}`;
+    try {
+      const request = await fetch(baseUrl, {
+        method: "DELETE",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (request.ok) {
+        const response = await request.json();
+        console.log("Response from API:", response);
+        toast.success("Event updated successfully!");
+        handleRefresh();
+      } else {
+        const errorData = await request.json();
+        console.error("Error from API:", errorData);
+        toast.error(
+          `Error updating event: ${errorData.message || "Unknown error"}`
+        );
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+      toast.error("Failed to update event. Please try again.");
+    } finally {
+    }
+  };
+
   const handleEvent = (type) => {
     setEvent(type);
   };
@@ -193,14 +234,11 @@ function Dashboard() {
     });
     setCurrentEvent(filteredEvents);
   };
+  console.log(currentEventId);
 
   useEffect(() => {
     handleViewEvent(authUser, currentEventId);
   }, [authUser, currentEventId]);
-
-  const totalAttendance = attendance?.reduce((acc, event) => {
-    return acc + event;
-  }, 0);
 
   return (
     <div className="px-16 py-4">
@@ -396,7 +434,14 @@ function Dashboard() {
                           >
                             View
                           </p>
-                          <p className="bg-[#FF3535] w-full text-sm cursor-pointer text-white p-2 rounded-md text-center">
+                          <p
+                            onClick={(e) => {
+                              e.preventDefault();
+                              // setViewEventData(true);
+                              handleDeleteEvent(authUser, currentEventId);
+                            }}
+                            className="bg-[#FF3535] w-full text-sm cursor-pointer text-white p-2 rounded-md text-center"
+                          >
                             Delete
                           </p>
                         </div>
