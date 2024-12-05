@@ -8,6 +8,7 @@ import CreateEvent from "./components/CreateEvent";
 import ViewEvent from "./components/ViewEvent";
 import LoadingScreen from "./components/Loader";
 import EditEvent from "./components/EditEvent";
+import SuccessMessage from "./components/SuccessMessage";
 
 function Dashboard() {
   const [event, setEvent] = useState("all");
@@ -616,6 +617,8 @@ function Dashboard() {
           )}
         </>
       )}
+
+      <SuccessMessage />
     </div>
   );
 }
