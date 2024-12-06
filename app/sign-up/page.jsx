@@ -42,25 +42,6 @@ function Signup() {
     const baseUrl = "/api/signup";
     setIsLoading(true);
 
-    // try {
-    //   const request = await fetch(baseUrl, {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify({ name, password, email }),
-    //   });
-
-    //   if (request.ok) {
-    //     const response = await request.json();
-    //     toast.success("User successfully registered, Procced to login");
-    //     handleNavigate();
-    //     setIsLoading(false);
-    //   } else {
-    //     return NextResponse.json(response);
-    //   }
-    // } catch (error) {
-    //   console.error("Error signing up:", error);
-    // }
-
     try {
       const request = await fetch(baseUrl, {
         method: "POST",
@@ -101,7 +82,7 @@ function Signup() {
       }
     } catch (error) {
       toast.error(`Something went wrong: ${error.message}`);
-      console.error("Error signing up:", error);
+      // console.log("Error signing up:", error);
       setIsLoading(false);
     }
   };

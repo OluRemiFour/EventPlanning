@@ -60,7 +60,7 @@ export async function POST(req) {
       return NextResponse.json(errorData, { status: response.status });
     }
   } catch (error) {
-    console.error("Server Error:", error.message);
+    console.log("Server Error:", error.message);
     return NextResponse.json(
       { message: "Internal Server Error" },
       { status: 500 }

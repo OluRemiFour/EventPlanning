@@ -4,11 +4,11 @@ import { useSetAtom } from "jotai";
 import { useEffect, useRef, useState } from "react";
 import { BsCalendarEvent, BsFillCalendarEventFill } from "react-icons/bs";
 import { IoPeopleSharp } from "react-icons/io5";
+import { toast } from "react-toastify";
 import CreateEvent from "./components/CreateEvent";
-import ViewEvent from "./components/ViewEvent";
-import LoadingScreen from "./components/Loader";
 import EditEvent from "./components/EditEvent";
-import SuccessMessage from "./components/SuccessMessage";
+import LoadingScreen from "./components/Loader";
+import ViewEvent from "./components/ViewEvent";
 
 function Dashboard() {
   const [event, setEvent] = useState("all");
@@ -21,10 +21,11 @@ function Dashboard() {
   const [viewEvent, setViewEvent] = useState([""]);
   const [attendance, setAttendance] = useState([""]);
   const authUser = sessionStorage.getItem("authToken");
-  const [currentEvent, setCurrentEvent] = useState();
+  const [currentEvent, setCurrentEvent] = useState([]);
   const [currentEventId, setCurrentEventId] = useState();
   const [eventData, setEventData] = useState([""]);
   const [viewEventData, setViewEventData] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [editEvent, setEditEvent] = useState(false);
   const eventTagsCache = useRef(null);
   const eventTypeCache = useRef(null);
@@ -44,11 +45,17 @@ function Dashboard() {
   const handleRefresh = () => {
     setTimeout(() => {
       window.location.reload();
-    }, 2000);
+    }, 2500);
   };
 
   const handleDeleteEvent = async (token, currentEventId) => {
+    if (!currentEventId) {
+      toast.error("No event selected to delete.");
+      return;
+    }
+
     const baseUrl = `/api/deleteEvent?id=${currentEventId}`;
+    setIsDeleting(true);
     try {
       const request = await fetch(baseUrl, {
         method: "DELETE",
@@ -62,19 +69,18 @@ function Dashboard() {
       if (request.ok) {
         const response = await request.json();
         console.log("Response from API:", response);
-        toast.success("Event updated successfully!");
+        toast.success("Event deleted successfully!");
+        setIsDeleting(false);
         handleRefresh();
       } else {
         const errorData = await request.json();
-        console.error("Error from API:", errorData);
         toast.error(
-          `Error updating event: ${errorData.message || "Unknown error"}`
+          `Error deleting event: ${errorData.message || "Unknown error"}`
         );
       }
+      setIsDeleting(false);
     } catch (error) {
-      console.error("Network error:", error);
-      toast.error("Failed to update event. Please try again.");
-    } finally {
+      toast.error("Failed to delete event. Please try again.");
     }
   };
 
@@ -168,7 +174,7 @@ function Dashboard() {
         setEventTags(response.data);
       }
     } catch (error) {
-      console.error("Error fetching event types:", error);
+      console.log("Error fetching event types:", error);
     }
   };
 
@@ -188,10 +194,10 @@ function Dashboard() {
         setEventData(response.data);
       } else {
         const errorData = await request.json();
-        console.error("Error fetching event:", errorData);
+        // console.log("Error fetching event:", errorData);
       }
     } catch (error) {
-      console.error("Error fetching events:", error);
+      // console.log("Error fetching events:", error);
     }
   };
 
@@ -214,11 +220,9 @@ function Dashboard() {
   }, [viewEvent]);
 
   useEffect(() => {
-    setCurrentEventId(
-      currentEvent?.map((event) => {
-        return event.id;
-      })
-    );
+    if (Array.isArray(currentEvent)) {
+      setCurrentEventId(currentEvent.map((event) => event.id));
+    }
   }, [viewEvent, currentEvent]);
 
   useEffect(() => {
@@ -229,13 +233,18 @@ function Dashboard() {
     );
   }, [viewEvent]);
 
-  const handleSelectedEvent = (eventCLicked) => {
-    const filteredEvents = viewEvent.filter((event) => {
-      return event.id === eventCLicked;
-    });
-    setCurrentEvent(filteredEvents);
+  const handleSelectedEvent = (eventClicked) => {
+    const filteredEvents = viewEvent.filter(
+      (event) => event.id === eventClicked
+    );
+    if (filteredEvents.length > 0) {
+      setCurrentEvent(filteredEvents[0]);
+      setCurrentEventId(filteredEvents[0].id);
+    }
   };
+
   console.log(currentEventId);
+  console.log(currentEvent);
 
   useEffect(() => {
     handleViewEvent(authUser, currentEventId);
@@ -251,7 +260,8 @@ function Dashboard() {
               <p>Upcoming Events</p>
             </div>
             <h1 className="text-[20px] font-semibold pt-2 text-white">
-              {userEvent?.length < 1 ? "0" : userEvent?.length} Events Scheduled
+              {userEvent?.length < 1 || !userEvent ? "0" : userEvent?.length}{" "}
+              Events Scheduled
             </h1>
           </div>
 
@@ -404,7 +414,7 @@ function Dashboard() {
                             onClick={(e) => {
                               e.preventDefault();
                               handleSelectedEvent(event.id);
-                              handleViewEvent(authUser, currentEventId);
+                              handleViewEvent(authUser, event.id);
                               setViewEventData(true);
                             }}
                             className="py-2 px-3 cursor-pointer w-full text-sm bg-[#E2E2E2] text-[#00458f] text-center rounded-md"
@@ -428,6 +438,7 @@ function Dashboard() {
                             onClick={(e) => {
                               e.preventDefault();
                               setViewEventData(true);
+                              handleSelectedEvent(event.id);
                               handleViewEvent(authUser, currentEventId);
                             }}
                             className="p-2 bg-[#E2E2E2] w-full text-sm cursor-pointer text-[#00458f] text-center rounded-md"
@@ -438,7 +449,8 @@ function Dashboard() {
                             onClick={(e) => {
                               e.preventDefault();
                               // setViewEventData(true);
-                              handleDeleteEvent(authUser, currentEventId);
+                              handleSelectedEvent(event.id);
+                              handleDeleteEvent(authUser, event.id);
                             }}
                             className="bg-[#FF3535] w-full text-sm cursor-pointer text-white p-2 rounded-md text-center"
                           >
@@ -489,14 +501,21 @@ function Dashboard() {
                           onClick={(e) => {
                             e.preventDefault();
                             handleSelectedEvent(event.id);
-                            handleViewEvent(authUser, currentEventId);
+                            handleViewEvent(authUser, event.id);
                             setViewEventData(true);
                           }}
                           className="py-2 px-3 cursor-pointer w-full text-sm bg-[#E2E2E2] text-[#00458f] text-center rounded-md"
                         >
                           View
                         </p>
-                        <p className="bg-[#00458f] w-full text-sm cursor-pointer text-white p-2 rounded-md text-center">
+                        <p
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleSelectedEvent(event.id);
+                            setEditEvent(true);
+                          }}
+                          className="bg-[#00458f] w-full text-sm cursor-pointer text-white p-2 rounded-md text-center"
+                        >
                           Edit
                         </p>
                       </div>
@@ -542,14 +561,22 @@ function Dashboard() {
                           onClick={(e) => {
                             e.preventDefault();
                             handleSelectedEvent(event.id);
-                            handleViewEvent(authUser, currentEventId);
+                            handleViewEvent(authUser, event.id);
                             setViewEventData(true);
                           }}
                           className="p-2 bg-[#E2E2E2] w-full text-sm cursor-pointer text-[#00458f] text-center rounded-md"
                         >
                           View
                         </p>
-                        <p className="bg-[#FF3535] w-full text-sm cursor-pointer text-white p-2 rounded-md text-center">
+                        <p
+                          onClick={(e) => {
+                            e.preventDefault();
+                            // setViewEventData(true);
+                            handleSelectedEvent(event.id);
+                            handleDeleteEvent(authUser, event.id);
+                          }}
+                          className="bg-[#FF3535] w-full text-sm cursor-pointer text-white p-2 rounded-md text-center"
+                        >
                           Delete
                         </p>
                       </div>
@@ -618,7 +645,7 @@ function Dashboard() {
         </>
       )}
 
-      <SuccessMessage />
+      {isDeleting && <LoadingScreen />}
     </div>
   );
 }

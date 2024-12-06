@@ -55,7 +55,7 @@ function Login() {
   //   } catch (error) {
   //     toast.error("Error logging in");
   //     toast.error(e);
-  //     console.error("Error logging in:", error);
+  //     console.log("Error logging in:", error);
   //   }
   // };
 
@@ -83,7 +83,7 @@ function Login() {
   //       toast.error(errorData.message || "Login failed, please try again."); // Show error message
   //     }
   //   } catch (error) {
-  //     console.error("Error logging in:", error);
+  //     console.log("Error logging in:", error);
   //     toast.error("An error occurred while logging in. Please try again."); // Catch unexpected errors
   //   } finally {
   //     setIsLoading(false);
@@ -126,7 +126,7 @@ function Login() {
         toast.error(errorMessage);
       }
     } catch (error) {
-      console.error("Error logging in:", error);
+      // console.log("Error logging in:", error);
       let errorMessage =
         "An unexpected error occurred. Please try again later.";
 

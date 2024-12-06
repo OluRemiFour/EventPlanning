@@ -18,32 +18,7 @@ function EditEvent({ setEditEvent, eventData, authUser, currentEventId }) {
     draft: false,
   });
 
-  console.log(authUser);
-
-  //   useEffect(() => {
-  //     if (eventData) {
-  //       const formatDate = (date) => {
-  //         const d = new Date(date);
-  //         return d.toISOString().slice(0, 19).replace("T", " ");
-  //       };
-
-  //       const formattedStartDate = formatDate(eventData?.start_date || "");
-  //       const formattedEndDate = formatDate(eventData?.end_date || "");
-  //       setFormData({
-  //         name: eventData?.name || "",
-  //         type: eventData?.type || "",
-  //         description: eventData?.description || "",
-  //         tags: eventData?.tags || "",
-  //         start_date: formattedStartDate,
-  //         end_date: formattedEndDate,
-  //         location_link: eventData?.location_link || "",
-  //         attendance_capacity: eventData?.attendance_capacity || Number(0),
-  //         ticket_pricing: eventData?.ticket_pricing || "",
-  //         ticket_price: eventData?.ticket_price || Number(0),
-  //         draft: eventData?.draft || false,
-  //       });
-  //     }
-  //   }, [eventData]);
+  // console.log(authUser);
 
   useEffect(() => {
     if (eventData) {
@@ -91,39 +66,6 @@ function EditEvent({ setEditEvent, eventData, authUser, currentEventId }) {
     }, 3000);
   };
 
-  // const handleEditEvent = async (token, currentEventId) => {
-  //   const baseUrl = `/api/editEvent?id=${currentEventId}`;
-
-  //   console.log(baseUrl);
-  //   setIsLoading(true);
-  //   try {
-  //     const request = await fetch(baseUrl, {
-  //       method: "PUT",
-  //       headers: {
-  //         Accept: "application/json",
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //       body: JSON.stringify(formData),
-  //     });
-
-  //     if (request.ok) {
-  //       const response = await request.json();
-  //       setEditEventData(response.data);
-  //       setIsLoading(false);
-  //       console.log(response);
-  //       toast.success("Event updated successfully!");
-  //       // handleRefresh();
-  //     } else {
-  //       const errorData = await request.json();
-  //       console.log("Error fetching event:", errorData);
-  //     }
-  //     setIsLoading(false);
-  //   } catch (error) {
-  //     console.error("Error fetching events:", error);
-  //   }
-  // };
-
   const handleEditEvent = async (token, currentEventId) => {
     const baseUrl = `/api/editEvent?id=${currentEventId}`;
 
@@ -147,16 +89,16 @@ function EditEvent({ setEditEvent, eventData, authUser, currentEventId }) {
         console.log("Response from API:", response);
         setEditEventData(response.data);
         toast.success("Event updated successfully!");
-        handleRefresh;
+        handleRefresh();
       } else {
         const errorData = await request.json();
-        console.error("Error from API:", errorData);
+        console.log("Error from API:", errorData);
         toast.error(
           `Error updating event: ${errorData.message || "Unknown error"}`
         );
       }
     } catch (error) {
-      console.error("Network error:", error);
+      console.log("Network error:", error);
       toast.error("Failed to update event. Please try again.");
     } finally {
       setIsLoading(false);

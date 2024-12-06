@@ -36,11 +36,11 @@ export async function DELETE(req) {
       return NextResponse.json(eventData);
     } else {
       const errorResponse = await response.json();
-      console.error("Error from API:", errorResponse);
+      console.log("Error from API:", errorResponse);
       return NextResponse.json(errorResponse, { status: response.status });
     }
   } catch (error) {
-    console.error("Server Error:", error);
+    console.log("Server Error:", error);
     return NextResponse.json(
       { message: "Internal Server Error" },
       { status: 500 }

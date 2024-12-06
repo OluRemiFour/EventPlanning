@@ -53,16 +53,15 @@ function EventTiming({
 
   const handleUserOptions = () => {
     if (
-      setEventStartDate.length < 1 ||
-      setEventEndDate.length < 1 ||
-      eventPricing.length < 1 ||
-      eventPlace.length < 1 ||
-      eventAttendee.length < 1 ||
+      !eventStartDate ||
+      !eventEndDate ||
+      !eventPricing ||
+      !eventPlace ||
+      !eventAttendee ||
       venuePlaceholder.length < 2 ||
       inputTicketValue.length < 2
     ) {
       setDisabled(true);
-      return;
     } else {
       setDisabled(false);
     }
@@ -70,7 +69,15 @@ function EventTiming({
 
   useEffect(() => {
     handleUserOptions();
-  }, [eventStartDate, eventEndDate, eventPricing, eventPlace, eventAttendee]);
+  }, [
+    eventStartDate,
+    eventEndDate,
+    eventPricing,
+    eventPlace,
+    eventAttendee,
+    inputTicketValue,
+    venuePlaceholder,
+  ]);
 
   const handleNextEvent = () => {
     if (currentStep === "eventTiming") {
@@ -215,7 +222,7 @@ function EventTiming({
                 </label>
               </div>
 
-              <div className="flex text-center my-16 py-6 justify-center gap-4 items-center">
+              <div className="flex text-center my-12 pt-6 pb-10 justify-center gap-4 items-center">
                 <button
                   onClick={(event) => {
                     event.preventDefault();

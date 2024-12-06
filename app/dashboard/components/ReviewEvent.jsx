@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import SuccessMessage from "./SuccessMessage";
 import { toast } from "react-toastify";
@@ -40,12 +39,12 @@ function ReviewEvent({
     const baseUrl = "/api/createEvent";
 
     if (!token) {
-      console.error("Token is required to create an event.");
+      console.log("Token is required to create an event.");
       return;
     }
 
     if (!eventName || !eventType || !eventStartDate || !eventEndDate) {
-      console.error("Missing required fields");
+      console.log("Missing required fields");
       return;
     }
 
@@ -83,15 +82,15 @@ function ReviewEvent({
         const responseData = await response.json();
         toast.success("Event created successfully");
         setIsLoading(false);
-        handleNextEvent();
         setEventLink(responseData.data);
+        handleNextEvent();
       } else {
         const errorData = await response.json();
         console.log("Failed to create event:", errorData);
       }
       setIsLoading(false);
     } catch (error) {
-      console.error("Error creating event:", error.message);
+      console.log("Error creating event:", error.message);
     }
   };
 

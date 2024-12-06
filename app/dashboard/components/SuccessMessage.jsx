@@ -13,7 +13,7 @@ function SuccessMessage({ eventLink }) {
       await navigator.clipboard.writeText(eventLink);
       setCopied(true);
     } catch (err) {
-      console.error("Failed to copy the link:", err);
+      console.log("Failed to copy the link:", err);
     }
   };
 
@@ -43,7 +43,7 @@ function SuccessMessage({ eventLink }) {
           </button>
         </div>
 
-        <div className="mt-8 py-6 px-16">
+        <div className="mt-8 py-6 px-12">
           <div className="flex justify-between pb-2 items-center">
             <p>Event Link</p>
             <p onClick={handleCopy} className="text-[#00458f] cursor-pointer">
