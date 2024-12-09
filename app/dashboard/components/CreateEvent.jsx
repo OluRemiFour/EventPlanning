@@ -45,7 +45,7 @@ function CreateEvent({ setCreateEvent, eventsTypes, eventsTags }) {
         <div
           className={`fixed top-0 left-0 w-full h-full bg-black bg-opacity-80 z-[1000] transform duration-700 ease-in-out overflow-hidden`}
         >
-          <div className="bg-white rounded-lg text-sm shadow-md flex-col justify-center w-fit h-fit mx-auto my-[3%]">
+          <div className="bg-white rounded-lg text-[12px] shadow-md flex-col justify-center w-fit h-fit mx-auto my-[3%]">
             <div className="flex-col justify-center items-center flex p-6">
               <h1 className="font-semibold text-[20px]">
                 Bring Your Event to Life
@@ -56,7 +56,7 @@ function CreateEvent({ setCreateEvent, eventsTypes, eventsTags }) {
             </div>
 
             <form className="px-6">
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <label className="flex-row flex">Event Name</label>
                 <input
                   type="text"
@@ -66,7 +66,7 @@ function CreateEvent({ setCreateEvent, eventsTypes, eventsTags }) {
                   placeholder="Enter the name of your event"
                 />
               </div>
-              <div className="flex-col flex my-3 space-y-2 py-1">
+              <div className="flex-col flex my-3 space-y-1 py-1">
                 <label>Event Type </label>
                 <select
                   onChange={(e) => setEventType(e.target.value)}
@@ -79,7 +79,7 @@ function CreateEvent({ setCreateEvent, eventsTypes, eventsTags }) {
                   ))}
                 </select>
               </div>
-              <div className="flex-col flex my-2 space-y-2">
+              <div className="flex-col flex my-2 space-y-1">
                 <label>Event Description </label>
                 <label>
                   <textarea

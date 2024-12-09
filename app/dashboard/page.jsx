@@ -9,6 +9,7 @@ import CreateEvent from "./components/CreateEvent";
 import EditEvent from "./components/EditEvent";
 import LoadingScreen from "./components/Loader";
 import ViewEvent from "./components/ViewEvent";
+import SuccessMessage from "./components/SuccessMessage";
 
 function Dashboard() {
   const [event, setEvent] = useState("all");

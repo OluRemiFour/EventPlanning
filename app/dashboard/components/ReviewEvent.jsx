@@ -112,7 +112,7 @@ function ReviewEvent({
         <div
           className={`fixed top-0 left-0 w-full h-full bg-black bg-opacity-80 z-[1000] transform duration-700 ease-in-out overflow-hidden`}
         >
-          <div className="bg-white rounded-lg text-sm shadow-md flex-col justify-center w-fit h-fit mx-auto my-[3%]">
+          <div className="bg-white rounded-lg text-[12px] shadow-md flex-col justify-center w-fit h-fit mx-auto my-[3%]">
             <div className="flex-col justify-center items-center flex p-10">
               <h1 className="font-semibold text-[20px]">Review Your Event</h1>
               <p className="text-[#999999] pt-1">
