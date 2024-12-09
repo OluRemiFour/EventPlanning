@@ -20,9 +20,21 @@ function ReviewEvent({
 }) {
   const [currentStep, setCurrentStep] = useState("reviewEvent");
   const [saveToDraft, setSaveToDraft] = useState(false);
-  const authUser = sessionStorage.getItem("authToken");
+  // const authUser = sessionStorage.getItem("authToken");
+  const [authUser, setAuthUser] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [eventLink, setEventLink] = useState([""]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("authToken");
+      setAuthUser(token);
+
+      if (!token) {
+        window.location.href = "/login";
+      }
+    }
+  }, []);
 
   const handleNextEvent = () => {
     if (currentStep === "reviewEvent") {
@@ -38,10 +50,10 @@ function ReviewEvent({
   const handleCreateEvent = async (token) => {
     const baseUrl = "/api/createEvent";
 
-    if (!token) {
-      console.log("Token is required to create an event.");
-      return;
-    }
+    // if (!token) {
+    //   console.log("Token is required to create an event.");
+    //   return;
+    // }
 
     if (!eventName || !eventType || !eventStartDate || !eventEndDate) {
       console.log("Missing required fields");

@@ -20,7 +20,9 @@ function Dashboard() {
   const [userEvent, setUserEvent] = useState("");
   const [viewEvent, setViewEvent] = useState([""]);
   const [attendance, setAttendance] = useState([""]);
-  const authUser = sessionStorage.getItem("authToken");
+  const [authUser, setAuthUser] = useState();
+  // const authUser = sessionStorage.getItem("authToken");
+  // const [authUser, setAuthUser] = useState(false)
   const [currentEvent, setCurrentEvent] = useState([]);
   const [currentEventId, setCurrentEventId] = useState();
   const [eventData, setEventData] = useState([""]);
@@ -31,12 +33,30 @@ function Dashboard() {
   const eventTypeCache = useRef(null);
   const userProfile = useRef(null);
 
+  // useEffect(() => {
+  //   const authUser = sessionStorage.getItem("authToken");
+  //   setAuthUser(authUser);
+  // }, [authUser]);
+
+  // const authUser = typeof window !== undefined && localStorage.getItem("authToken");
+
+  // useEffect(() => {
+  //   if (!authUser) {
+  //     window.location.href = "/login";
+  //     return;
+  //   }
+  // }, [authUser]);
+
   useEffect(() => {
-    if (!authUser) {
-      window.location.href = "/login";
-      return;
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("authToken");
+      setAuthUser(token);
+
+      if (!token) {
+        window.location.href = "/login";
+      }
     }
-  }, [authUser]);
+  }, []);
 
   const totalAttendance = attendance?.reduce((acc, event) => {
     return acc + event;
@@ -45,7 +65,7 @@ function Dashboard() {
   const handleRefresh = () => {
     setTimeout(() => {
       window.location.reload();
-    }, 2500);
+    }, 1000);
   };
 
   const handleDeleteEvent = async (token, currentEventId) => {
@@ -126,7 +146,6 @@ function Dashboard() {
       if (request.ok) {
         const response = await request.json();
         setViewEvent(response.data);
-        // console.log("All Events:", response);
       }
     } catch (error) {}
   };
@@ -149,7 +168,6 @@ function Dashboard() {
         const response = await request.json();
         eventTypeCache.current = response.data;
         setEvetTypes(response.data);
-        // console.log("Event Types:", response);
       }
     } catch (error) {}
   };
@@ -194,11 +212,8 @@ function Dashboard() {
         setEventData(response.data);
       } else {
         const errorData = await request.json();
-        // console.log("Error fetching event:", errorData);
       }
-    } catch (error) {
-      // console.log("Error fetching events:", error);
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -242,9 +257,6 @@ function Dashboard() {
       setCurrentEventId(filteredEvents[0].id);
     }
   };
-
-  console.log(currentEventId);
-  console.log(currentEvent);
 
   useEffect(() => {
     handleViewEvent(authUser, currentEventId);

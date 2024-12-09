@@ -5,12 +5,15 @@ import { useEffect, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { toast } from "react-toastify";
 import Header from "../components/Header";
+import LoadingScreen from "../dashboard/components/Loader";
+// import { cookies } from "next/headers";
 
 function Login() {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [disabled, setDisabled] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  // const [isLoadingScreen, setIsLoadingSereen] = useState(false);
 
   const handleUserInput = () => {
     if (password.trim().length < 1 || !email.includes("@")) {
@@ -30,70 +33,12 @@ function Login() {
     window.location.href = "/dashboard";
   };
 
-  console.log(email, password);
-
-  // const handleUserSignIn = async (event) => {
-  //   event.preventDefault();
-  //   const baseUrl = "/api/auth/login";
-  //   setIsLoading(true);
-  //   try {
-  //     const request = await fetch(baseUrl, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ email, password }),
-  //     });
-  //     if (request.status === 200) {
-  //       const response = await request.json();
-  //       console.log(response);
-  //       toast.success("Login successful");
-  //       handleNavigate();
-  //       setIsLoading(false);
-  //     }
-  //     setIsLoading(false);
-  //   } catch (error) {
-  //     toast.error("Error logging in");
-  //     toast.error(e);
-  //     console.log("Error logging in:", error);
-  //   }
-  // };
-
-  // const handleUserSignIn = async (event) => {
-  //   event.preventDefault();
-  //   const baseUrl = "/api/login";
-  //   setIsLoading(true);
-
-  //   try {
-  //     const response = await fetch(baseUrl, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ email, password }),
-  //     });
-
-  //     if (response.ok) {
-  //       const data = await response.json();
-  //       toast.success("Login successful! Redirecting...");
-  //       setGetToken(data.access_token);
-  //       data.cookies.set("authToken", getToken);
-  //     } else {
-  //       const errorData = await response.json();
-  //       toast.error(errorData.message || "Login failed, please try again."); // Show error message
-  //     }
-  //   } catch (error) {
-  //     console.log("Error logging in:", error);
-  //     toast.error("An error occurred while logging in. Please try again."); // Catch unexpected errors
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
 
   const handleUserSignIn = async (event) => {
     event.preventDefault();
     const baseUrl = "/api/login";
     setIsLoading(true);
+    // setIsLoadingSereen(true);
 
     try {
       const response = await fetch(baseUrl, {
@@ -108,8 +53,11 @@ function Login() {
         const data = await response.json();
         toast.success("Login successful! Redirecting...");
 
-        document.cookie = `authToken=${data.access_token}; path=/; secure; HttpOnly`;
-        sessionStorage.setItem("authToken", data.access_token);
+        // document.cookie = `authToken=${data.access_token}; path=/; secure; HttpOnly`;
+        // sessionStorage.setItem("authToken", data.access_token);
+
+        typeof window !== undefined &&
+          localStorage.setItem("authToken", data.access_token);
         handleNavigate();
       } else {
         const errorData = await response.json();
@@ -126,7 +74,6 @@ function Login() {
         toast.error(errorMessage);
       }
     } catch (error) {
-      // console.log("Error logging in:", error);
       let errorMessage =
         "An unexpected error occurred. Please try again later.";
 
@@ -139,6 +86,7 @@ function Login() {
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
+      // setIsLoadingSereen(false);
     }
   };
 
@@ -242,6 +190,8 @@ function Login() {
           </Link>
         </div>
       </div>
+
+      {/* {isLoadingScreen && <LoadingScreen />} */}
     </div>
   );
 }
