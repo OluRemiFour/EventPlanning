@@ -33,7 +33,6 @@ function Login() {
     window.location.href = "/dashboard";
   };
 
-
   const handleUserSignIn = async (event) => {
     event.preventDefault();
     const baseUrl = "/api/login";
@@ -93,7 +92,7 @@ function Login() {
   return (
     <div>
       <Header />
-      <div className="md:flex items-center md:gap-16 lg:gap-32">
+      <div className="md:flex items-center md:gap-16 lg:gap-28">
         <Image
           aria-hidden
           src="/authpic.svg"

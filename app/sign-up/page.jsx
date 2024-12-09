@@ -90,7 +90,7 @@ function Signup() {
   return (
     <div>
       <Header />
-      <div className="md:flex items-center lg:gap-32 md:gap-14">
+      <div className="md:flex items-center lg:gap-28 md:gap-14">
         <Image
           aria-hidden
           src="/authpic.svg"
