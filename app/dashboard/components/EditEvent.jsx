@@ -177,7 +177,7 @@ function EditEvent({ setEditEvent, eventData, authUser, currentEventId }) {
                 className="text-[#7D7D7D] rounded-lg border bg-[#f0f0f0] px-2 py-3 outline-none w-full"
               />
               <input
-                type="number"
+                type="text"
                 name="attendance_capacity"
                 value={formData.attendance_capacity}
                 onChange={handleInputChange}

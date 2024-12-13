@@ -121,7 +121,7 @@ function ReviewEvent({
             </div>
             <form className="px-6">
               <div className="space-y-2">
-                <p className="py-1">Event Event Name</p>
+                <p className="py-1">Event Name</p>
                 <p className="text-[#7D7D7D] rounded-lg border bg-[#f0f0f0] px-2 py-3 outline-none w-[25rem]">
                   {eventName}
                 </p>

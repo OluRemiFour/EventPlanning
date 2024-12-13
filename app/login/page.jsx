@@ -92,7 +92,7 @@ function Login() {
   return (
     <div>
       <Header />
-      <div className="md:flex items-center md:gap-16 lg:gap-28">
+      <div className="md:flex items-center md:gap-16 lg:gap-20 overflow-hidden">
         <Image
           aria-hidden
           src="/authpic.svg"

@@ -39,7 +39,7 @@ function LandingPage() {
 
       <div className="md:py-[150px] py-[50px] px-[30px] md:px-[60px]">
         <div className="md:flex md:space-y-0 space-y-3 justify-between">
-          <h1 className="lg:text-[50px] md:text[40px] text-[35px]">
+          <h1 className="lg:text-[45px] md:text[40px] text-[35px]">
             Seamless Event Planning, Simplified
           </h1>
 
